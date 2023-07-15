@@ -307,15 +307,18 @@ module  frogger(
    logic [9:0]	addr_read_live;
    logic [8:0]	addr_read_time, addr_read_vict;
 
-   frogROM fROM(.read_address(addr_read_frog), .Clk(CLK),.data_Out(frogROM_out));
-   carROM cROM(.*, .read_address(addr_read_car), .Clk(CLK), .data_Out(carROM_out));
-   logROM lrom(.*, .read_address(addr_read_log), .Clk(CLK), .data_Out(logROM_out));
-   titleROM trom(.*, .read_address(addr_read_title), .Clk(CLK), .data_Out(titleROM_out));
-   loseROM lorom(.*, .read_address(addr_read_lose), .Clk(CLK), .data_Out(loseROM_out));
-   liveROM lirom(.*, .read_address(addr_read_live), .Clk(CLK), .data_Out(liveROM_out));
-   timeROM tirom(.*, .read_address(addr_read_time), .Clk(CLK), .data_Out(timeROM_out));
-   startROM strom(.*, .read_address(addr_read_start), .Clk(CLK), .data_Out(startROM_out));
-   victoryROM virom(.*, .read_address(addr_read_vict), .Clk(CLK), .data_Out(victROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))frogROM fROM(.read_address(addr_read_frog), .Clk(CLK),.data_Out(frogROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))carROM cROM(.*, .read_address(addr_read_car), .Clk(CLK), .data_Out(carROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))logROM lrom(.*, .read_address(addr_read_log), .Clk(CLK), .data_Out(logROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))titleROM trom(.*, .read_address(addr_read_title), .Clk(CLK), .data_Out(titleROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) loseROM lorom(.*, .read_address(addr_read_lose), .Clk(CLK), .data_Out(loseROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) liveROM lirom(.*, .read_address(addr_read_live), .Clk(CLK), .data_Out(liveROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) timeROM tirom(.*, .read_address(addr_read_time), .Clk(CLK), .data_Out(timeROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/backGROUNDROM.txt"))
+   backgroundROM(
+				 .*, .read_address(addr_read_start), .Clk(CLK), .data_Out(startROM_out)
+				 );
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) virom(.*, .read_address(addr_read_vict), .Clk(CLK), .data_Out(victROM_out));
    //=======================================================
    //  CLK Divider for sprites: Based on https://electronics.stackexchange.com/questions/267010/verilog-code-for-frequency-divider
    //=======================================================
@@ -924,33 +927,22 @@ module  frogger(
 		end
 	 end
    //=======================================================
-   //  Title Screen Drawing
+   //  Title/Lose Screen Drawing
    //=======================================================
    always_comb begin
-
 	  if(DrawX >= 208 && DrawX < 432 && DrawY >= 112 && DrawY < 368)
 		begin
-		   addr_read_title <= ((DrawX-208) + (DrawY-112)*224);
+		   if(gameStart = 1'b0)
+			 addr_read_title <= ((DrawX-208) + (DrawY-112)*224);
+		   else if(gameEnd == 1'b1)
+			 addr_read_background <= ((DrawX-208) + (DrawY-112)*224)+4030;
 		end
 	  else
 		begin
 		   addr_read_title <= 0;
 		end
    end
-   //=======================================================
-   //  Lose Screen Drawing
-   //=======================================================
-   always_comb begin
 
-	  if(DrawX >= 208 && DrawX < 432 && DrawY >= 112 && DrawY < 368)
-		begin
-		   addr_read_lose <= ((DrawX-208) + (DrawY-112)*224);
-		end
-	  else
-		begin
-		   addr_read_lose <= 0;
-		end
-   end
    //=======================================================
    //  Start Screen Drawing
    //=======================================================
@@ -1091,7 +1083,7 @@ module  frogger(
    //=======================================================
    //  Timer Drawing Determination
    //=======================================================
-	logic Sat Jul 15 15:25:30 2023_on, time_word_on;
+   logic time_on, time_word_on;
    logic [8:0] timeR, timeG, timeB;
    always_comb begin
 	  if(DrawY > 441 && DrawY < 469)
