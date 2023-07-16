@@ -299,26 +299,26 @@ module  frogger(
    //  Initialize ROMs
    //=======================================================
    logic roadROM_out;
-   logic [3:0] frogROM_out, carROM_out, logROM_out, titleROM_out, loseROM_out, liveROM_out, timeROM_out, startROM_out, victROM_out;
+   logic [3:0] frogROM_out, carROM_out, logROM_out, backgroundROM_out, liveROM_out, timeROM_out, startROM_out, victROM_out;
    logic [11:0]	addr_read_frog;
    logic [11:0]	addr_read_car, addr_read_log, addr_read_start;
    logic [12:0]	roadROM_addr;
-   logic [15:0]	addr_read_title, addr_read_lose;
+   logic [20:0]	addr_read_background;
    logic [9:0]	addr_read_live;
    logic [8:0]	addr_read_time, addr_read_vict;
 
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))frogROM fROM(.read_address(addr_read_frog), .Clk(CLK),.data_Out(frogROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))carROM cROM(.*, .read_address(addr_read_car), .Clk(CLK), .data_Out(carROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))logROM lrom(.*, .read_address(addr_read_log), .Clk(CLK), .data_Out(logROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))titleROM trom(.*, .read_address(addr_read_title), .Clk(CLK), .data_Out(titleROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) loseROM lorom(.*, .read_address(addr_read_lose), .Clk(CLK), .data_Out(loseROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) liveROM lirom(.*, .read_address(addr_read_live), .Clk(CLK), .data_Out(liveROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) timeROM tirom(.*, .read_address(addr_read_time), .Clk(CLK), .data_Out(timeROM_out));
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/backGROUNDROM.txt"))
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))frogROM fROM(.read_address(addr_read_frog), .Clk(CLK),.data_Out(frogROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))carROM cROM(.*, .read_address(addr_read_car), .Clk(CLK), .data_Out(carROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))logROM lrom(.*, .read_address(addr_read_log), .Clk(CLK), .data_Out(logROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))titleROM trom(.*, .read_address(addr_read_title), .Clk(CLK), .data_Out(titleROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) loseROM lorom(.*, .read_address(addr_read_lose), .Clk(CLK), .data_Out(loseROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) liveROM lirom(.*, .read_address(addr_read_live), .Clk(CLK), .data_Out(liveROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) timeROM tirom(.*, .read_address(addr_read_time), .Clk(CLK), .data_Out(timeROM_out));
+   spriteROM #(.ADDR_WIDTH(17), .DATA_WIDTH(114688), .FILE_NAME("sprite_bytes/backgroundROM.txt"))
    backgroundROM(
-				 .*, .read_address(addr_read_start), .Clk(CLK), .data_Out(startROM_out)
+				 .read_address(addr_read_background), .Clk(CLK), .data_Out(backgroundROM_out)
 				 );
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) virom(.*, .read_address(addr_read_vict), .Clk(CLK), .data_Out(victROM_out));
+   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) virom(.*, .read_address(addr_read_vict), .Clk(CLK), .data_Out(victROM_out));
    //=======================================================
    //  CLK Divider for sprites: Based on https://electronics.stackexchange.com/questions/267010/verilog-code-for-frequency-divider
    //=======================================================
@@ -430,9 +430,9 @@ module  frogger(
 						  .red(car_red), .green(car_green), .blue(car_blue));
    palette_to_rgb rgblogs(.palette(logROM_out), .transparent(is_log_transparent),
 						  .red(log_red), .green(log_green), .blue(log_blue));
-   palette_to_rgb rgbtitle(.palette(titleROM_out), .transparent(),
+   palette_to_rgb rgbtitle(.palette(backgroundROM_out), .transparent(),
 						   .red(title_red), .green(title_green), .blue(title_blue));
-   palette_to_rgb rgblose(.palette(loseROM_out), .transparent(),
+   palette_to_rgb rgblose(.palette(backgroundROM_out), .transparent(),
 						  .red(lose_red), .green(lose_green), .blue(lose_blue));
    palette_to_rgb rgblive(.palette(liveROM_out), .transparent(),
 						  .red(live_red), .green(live_green), .blue(live_blue));
@@ -932,14 +932,16 @@ module  frogger(
    always_comb begin
 	  if(DrawX >= 208 && DrawX < 432 && DrawY >= 112 && DrawY < 368)
 		begin
-		   if(gameStart = 1'b0)
-			 addr_read_title <= ((DrawX-208) + (DrawY-112)*224);
+		   if(gameStart == 1'b0)
+			 addr_read_background <= ((DrawX-208) + (DrawY-112)*224);
 		   else if(gameEnd == 1'b1)
-			 addr_read_background <= ((DrawX-208) + (DrawY-112)*224)+4030;
+			 addr_read_background <= ((DrawX-208) + (DrawY-112)*224)+57344;
+		   else
+			 addr_read_background <= 0;
 		end
 	  else
 		begin
-		   addr_read_title <= 0;
+		   addr_read_background <= 0;
 		end
    end
 
