@@ -28,19 +28,6 @@ module finalTop (
                  output [7:0]  HEX4,
                  output [7:0]  HEX5,
 
-                 ///////// SDRAM /////////
-                 output        DRAM_CLK,
-                 output        DRAM_CKE,
-                 output [12:0] DRAM_ADDR,
-                 output [1:0]  DRAM_BA,
-                 inout [15:0]  DRAM_DQ,
-                 output        DRAM_LDQM,
-                 output        DRAM_UDQM,
-                 output        DRAM_CS_N,
-                 output        DRAM_WE_N,
-                 output        DRAM_CAS_N,
-                 output        DRAM_RAS_N,
-
                  ///////// VGA /////////
                  output        VGA_HS,
                  output        VGA_VS,
@@ -62,7 +49,7 @@ module finalTop (
 //  REG/WIRE declarations
 //=======================================================
    //logic SPI0_CS_N, SPI0_SCLK, SPI0_MISO, SPI0_MOSI, USB_GPX, USB_IRQ, USB_RST;
-   logic [3:0] hex_num_4, hex_num_3, hex_num_1, hex_num_0; //4 bit input hex digits
+   logic [3:0] hex_num_4, hex_num_3, hex_num_2, hex_num_1, hex_num_0; //4 bit input hex digits
    logic [1:0] signs;
    logic [1:0] hundreds;
    logic [9:0] drawxsig, drawysig, ballxsig, ballysig, ballsizesig;
