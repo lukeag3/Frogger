@@ -8,14 +8,14 @@
 //		  Handles the drawing, and gameplay of frogger 							 --
 //-------------------------------------------------------------------------
 module  frogger(
-				input				CLK, MAX10_CLK1_50, ResetIn,
-				input [9:0]			DrawX, DrawY,
-				input logic [7:0]	keycode,
-				input logic [9:0]	SW,
-				output logic [7:0]	Red, Green, Blue,
-				output logic [15:0]	score);
+				input               CLK, MAX10_CLK1_50, ResetIn,
+				input [9:0]         DrawX, DrawY,
+				input logic [7:0]   keycode,
+				input logic [9:0]   SW,
+				output logic [7:0]  Red, Green, Blue,
+				output logic [15:0] score);
 								
-   logic							Reset;
+   logic                            Reset;
    always_ff @ (posedge MAX10_CLK1_50 or posedge ResetIn or posedge ResetLevel )
 	 begin
 		if(ResetIn == 1'b1 || ResetLevel == 1'b1)
@@ -233,12 +233,12 @@ module  frogger(
 		  end
 		else if(FrogY < 60)
 		  begin
-			 Level <= Level + 1;
+			 Level <= Level + 1'b1;
 			 ResetLevel <= 1;
 		  end
 		else if(Collision == 1'b1 || Splash == 1'b1)
 		  begin
-			 Lives <= Lives - 1;
+			 Lives <= Lives - 1'b1;
 			ResetLevel <= 1;
 		  end
 		else
@@ -298,41 +298,53 @@ module  frogger(
    //=======================================================
    //  Initialize ROMs
    //=======================================================
-   logic roadROM_out;
-   logic [3:0] frogROM_out, carROM_out, logROM_out, backgroundROM_out, liveROM_out, timeROM_out, startROM_out, victROM_out;
-   logic [11:0]	addr_read_frog;
-   logic [11:0]	addr_read_car, addr_read_log, addr_read_start;
-   logic [12:0]	roadROM_addr;
-   logic [20:0]	addr_read_background;
-   logic [9:0]	addr_read_live;
-   logic [8:0]	addr_read_time, addr_read_vict;
+   logic [3:0] frogROM_out, carROM_out, logROM_out, backgroundROM_out, peripheralROM_out, startROM_out;
+   logic [11:0] addr_read_car, addr_read_log, addr_read_start, addr_read_frog;
+   logic [10:0] addr_read_peripheral;
+   logic [17:0] addr_read_background;
+   logic [9:0]  addr_read_live;
+   logic [8:0]  addr_read_time, addr_read_vict;
 
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))frogROM fROM(.read_address(addr_read_frog), .Clk(CLK),.data_Out(frogROM_out));
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))carROM cROM(.*, .read_address(addr_read_car), .Clk(CLK), .data_Out(carROM_out));
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))logROM lrom(.*, .read_address(addr_read_log), .Clk(CLK), .data_Out(logROM_out));
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))titleROM trom(.*, .read_address(addr_read_title), .Clk(CLK), .data_Out(titleROM_out));
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) loseROM lorom(.*, .read_address(addr_read_lose), .Clk(CLK), .data_Out(loseROM_out));
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) liveROM lirom(.*, .read_address(addr_read_live), .Clk(CLK), .data_Out(liveROM_out));
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) timeROM tirom(.*, .read_address(addr_read_time), .Clk(CLK), .data_Out(timeROM_out));
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(3200), .FILE_NAME("sprite_bytes/frogROM.txt"))
+   frogROM(
+           .read_address(addr_read_frog), .Clk(CLK),.data_Out(frogROM_out)
+           );
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(1600), .FILE_NAME("sprite_bytes/carROM.txt"))
+   carROM(
+          .read_address(addr_read_car), .Clk(CLK), .data_Out(carROM_out)
+          );
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(3200), .FILE_NAME("sprite_bytes/logROM.txt"))
+   logROM(
+          .read_address(addr_read_log), .Clk(CLK), .data_Out(logROM_out)
+          );
    spriteROM #(.ADDR_WIDTH(17), .DATA_WIDTH(114688), .FILE_NAME("sprite_bytes/backgroundROM.txt"))
    backgroundROM(
 				 .read_address(addr_read_background), .Clk(CLK), .data_Out(backgroundROM_out)
 				 );
-   //spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt")) virom(.*, .read_address(addr_read_vict), .Clk(CLK), .data_Out(victROM_out));
+   spriteROM #(.ADDR_WIDTH(11), .DATA_WIDTH(1104), .FILE_NAME("sprite_bytes/peripheralROM.txt"))
+   peripheralROM(
+                 .read_address(addr_read_peripheral), .Clk(CLK), .data_Out(peripheralROM_out)
+                 );
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))
+   startROM(
+            .read_address(addr_read_start), .Clk(CLK), .data_Out(startROM_out)
+            );
+
    //=======================================================
    //  CLK Divider for sprites: Based on https://electronics.stackexchange.com/questions/267010/verilog-code-for-frequency-divider
    //=======================================================
-   logic [19:0]	divCnt;
-   logic		sprite_div_clk;
-   always_ff @(posedge MAX10_CLK1_50) begin
-	  divCnt <= divCnt + 1;
-	  if(divCnt == 500000) begin
-		 divCnt <= 0;
-		 sprite_div_clk <=!sprite_div_clk;
-	  end
-   end
-   //=======================================================
-   //  Initialize clock and score
+   logic [19:0] divCnt;
+   logic        sprite_div_clk;
+   always_ff @(posedge MAX10_CLK1_50)
+     begin
+        divCnt <= divCnt + 1;
+	    if(divCnt == 500000)
+          begin
+		     divCnt <= 0;
+		     sprite_div_clk <=!sprite_div_clk;
+	      end
+     end
+   //=======================================================   //  Initialize clock and score
    //=======================================================
    logic [5:0] tim;
    clock clock0(.*,.clk(MAX10_CLK1_50), .Reset(ResetIn), .gameEnd(gameEnd), .gameStart(gameStart), .tim(tim), .level(Level));
@@ -418,11 +430,13 @@ module  frogger(
    //=======================================================
    //  Convert ROMdata to colors
    //=======================================================
-   logic	   is_frog__transparent, is_car_transparent, is_log_transparent, is_vict_transparent; //active high
+   logic	   is_frog_transparent, is_car_transparent, is_log_transparent, is_vict_transparent; //active high
    logic [7:0] car_red, car_green, car_blue, frog_red, frog_green, frog_blue, log_red, log_green,
 			   log_blue, title_red, title_blue, title_green, lose_red, lose_blue, lose_green,
 			   live_blue, live_red, live_green, time_red, time_blue, time_green,
 			   start_blue, start_green, start_red, vict_red, vict_green, vict_blue;
+
+// TODO combine
 
    palette_to_rgb rgbfrogs(.palette(frogROM_out), .transparent(is_frog_transparent),
 						   .red(frog_red), .green(frog_green), .blue(frog_blue));
@@ -434,13 +448,13 @@ module  frogger(
 						   .red(title_red), .green(title_green), .blue(title_blue));
    palette_to_rgb rgblose(.palette(backgroundROM_out), .transparent(),
 						  .red(lose_red), .green(lose_green), .blue(lose_blue));
-   palette_to_rgb rgblive(.palette(liveROM_out), .transparent(),
+   palette_to_rgb rgblive(.palette(peripheralROM_out), .transparent(),
 						  .red(live_red), .green(live_green), .blue(live_blue));
-   palette_to_rgb rgbtime(.palette(timeROM_out), .transparent(),
+   palette_to_rgb rgbtime(.palette(peripheralROM_out), .transparent(),
 						  .red(time_red), .green(time_green), .blue(time_blue));
    palette_to_rgb rgbstart(.palette(startROM_out), .transparent(),
 						   .red(start_red), .green(start_green), .blue(start_blue));
-   palette_to_rgb rgbvict(.palette(victROM_out), .transparent(is_vict_transparent),
+   palette_to_rgb rgbvict(.palette(peripheralROM_out), .transparent(is_vict_transparent),
 						  .red(vict_red), .green(vict_green), .blue(vict_blue));
    //=======================================================
    //  Frog Drawing Determination
@@ -1010,30 +1024,64 @@ module  frogger(
    always_comb begin
 	  if ((home0 == 1'b1) &&(DrawX > (120 - victOFF)) && (DrawX < (120 + victOFF)) && (DrawY > (45 - victOFF)) && (DrawY < (45 + victOFF))) begin
          vict_on <= 1'b1;
-		 addr_read_vict <= ((DrawX-vict0startX)/2 + (DrawY-vict0startY)/2*16);
+		 addr_read_peripheral <= ((DrawX-vict0startX)/2 + (DrawY-vict0startY)/2*16)+848;
 	  end
 	  else if ((home1 == 1'b1) &&(DrawX > (230 - victOFF)) && (DrawX < (230 + victOFF)) && (DrawY > (45 - victOFF)) && (DrawY < (45 + victOFF))) begin
          vict_on <= 1'b1;
-		 addr_read_vict <= ((DrawX-vict1startX)/2 + (DrawY-vict1startY)/2*16);
+		 addr_read_peripheral <= ((DrawX-vict1startX)/2 + (DrawY-vict1startY)/2*16)+848;
 	  end
 	  else if ((home2 == 1'b1) &&(DrawX > (340 - victOFF)) && (DrawX < (340 + victOFF)) && (DrawY > (45 - victOFF)) && (DrawY < (45 + victOFF))) begin
          vict_on <= 1'b1;
-		 addr_read_vict <= ((DrawX-vict2startX)/2 + (DrawY-vict2startY)/2*16);
+		 addr_read_peripheral <= ((DrawX-vict2startX)/2 + (DrawY-vict2startY)/2*16)+848;
 	  end
 	  else if ((home3 == 1'b1) &&(DrawX > (450 - victOFF)) && (DrawX < (450 + victOFF)) && (DrawY > (45 - victOFF)) && (DrawY < (45 + victOFF))) begin
          vict_on <= 1'b1;
-		 addr_read_vict <= ((DrawX-vict3startX)/2 + (DrawY-vict3startY)/2*16);
+		 addr_read_peripheral <= ((DrawX-vict3startX)/2 + (DrawY-vict3startY)/2*16)+848;
 	  end
 	  else if ((home4 == 1'b1) &&(DrawX > (560 - victOFF)) && (DrawX < (560 + victOFF)) && (DrawY > (45 - victOFF)) && (DrawY < (45 + victOFF))) begin
          vict_on <= 1'b1;
-		 addr_read_vict <= ((DrawX-vict4startX)/2 + (DrawY-vict4startY)/2*16);
+		 addr_read_peripheral <= ((DrawX-vict4startX)/2 + (DrawY-vict4startY)/2*16)+848;
 	  end
 	  else
 		begin
 		   vict_on <= 1'b0;
-		   addr_read_vict <= 0;
+		   addr_read_peripheral <= 0;
 		end
-
+      if ((Lives >= 1) && (DrawX > (92 - liveOFF)) && (DrawX < (92 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
+         live_on <= 1'b1;
+		 addr_read_peripheral <= ((DrawX-live0startX) + (DrawY-live0startY)*24)+272;
+	  end
+	  else if ((Lives >= 2) &&(DrawX > (116 - liveOFF)) && (DrawX < (116 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
+         live_on <= 1'b1;
+		 addr_read_peripheral <= ((DrawX-live1startX) + (DrawY-live1startY)*24)+272;
+	  end
+	  else if ((Lives >= 3) &&(DrawX > (140 - liveOFF)) && (DrawX < (140 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
+         live_on <= 1'b1;
+		 addr_read_peripheral <= ((DrawX-live2startX) + (DrawY-live2startY)*24)+272;
+	  end
+	  else if ((Lives >= 4) &&(DrawX > (164 - liveOFF)) && (DrawX < (164 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
+         live_on <= 1'b1;
+		 addr_read_peripheral <= ((DrawX-live3startX) + (DrawY-live3startY)*24)+272;
+	  end
+	  else if ((Lives >= 5) &&(DrawX > (188 - liveOFF)) && (DrawX < (188 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
+         live_on <= 1'b1;
+		 addr_read_peripheral <= ((DrawX-live4startX) + (DrawY-live4startY)*24)+272;
+	  end
+	  else
+		begin
+		   live_on <= 1'b0;
+		   addr_read_peripheral <= 0;
+		end
+      if(DrawX >= 386 && DrawX < 454 && DrawY >= 445 && DrawY < 462)
+		begin
+		   time_word_on <= 1'b1;
+		   addr_read_peripheral <= ((DrawX-386)/2 + (DrawY-445)/2*34);
+		end
+	  else
+		begin
+		   time_word_on <= 1'b0;
+		   addr_read_peripheral <= 0;
+		end
    end
    //=======================================================
    //  Lives Drawing Determination
@@ -1054,34 +1102,6 @@ module  frogger(
 	  live4startX <= 188 - liveOFF;
 	  live4startY <= 455 - liveOFF;
    end
-   always_comb begin
-	  if ((Lives >= 1) && (DrawX > (92 - liveOFF)) && (DrawX < (92 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
-         live_on <= 1'b1;
-		 addr_read_live <= ((DrawX-live0startX) + (DrawY-live0startY)*24);
-	  end
-	  else if ((Lives >= 2) &&(DrawX > (116 - liveOFF)) && (DrawX < (116 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
-         live_on <= 1'b1;
-		 addr_read_live <= ((DrawX-live1startX) + (DrawY-live1startY)*24);
-	  end
-	  else if ((Lives >= 3) &&(DrawX > (140 - liveOFF)) && (DrawX < (140 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
-         live_on <= 1'b1;
-		 addr_read_live <= ((DrawX-live2startX) + (DrawY-live2startY)*24);
-	  end
-	  else if ((Lives >= 4) &&(DrawX > (164 - liveOFF)) && (DrawX < (164 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
-         live_on <= 1'b1;
-		 addr_read_live <= ((DrawX-live3startX) + (DrawY-live3startY)*24);
-	  end
-	  else if ((Lives >= 5) &&(DrawX > (188 - liveOFF)) && (DrawX < (188 + liveOFF)) && (DrawY > (455 - liveOFF)) && (DrawY < (455 + liveOFF))) begin
-         live_on <= 1'b1;
-		 addr_read_live <= ((DrawX-live4startX) + (DrawY-live4startY)*24);
-	  end
-	  else
-		begin
-		   live_on <= 1'b0;
-		   addr_read_live <= 0;
-		end
-
-   end
    //=======================================================
    //  Timer Drawing Determination
    //=======================================================
@@ -1090,56 +1110,56 @@ module  frogger(
    always_comb begin
 	  if(DrawY > 441 && DrawY < 469)
 		begin
-		   if((tim >= 60) && (DrawX>=460 && DrawX <580))
+		   if((tim >= 60) && (DrawX>=460 && DrawX<580))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 50) && (DrawX>=460 && DrawX <560))
+		   else if((tim >= 50) && (DrawX>=460 && DrawX<560))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 40) && (DrawX>=460 && DrawX <540))
+		   else if((tim >= 40) && (DrawX>=460 && DrawX<540))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 30) && (DrawX>=460 && DrawX <520))
+		   else if((tim >= 30) && (DrawX>=460 && DrawX<520))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 20) && (DrawX>=460 && DrawX <500))
+		   else if((tim >= 20) && (DrawX>=460 && DrawX<500))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 10) && (DrawX>=460 && DrawX <480))
+		   else if((tim >= 10) && (DrawX>=460 && DrawX<480))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 5) && (DrawX>=460 && DrawX <470))
+		   else if((tim >= 5) && (DrawX>=460 && DrawX<470))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
 				timeG <= 8'hDA;
 				timeB <= 8'h43;
 			 end
-		   else if((tim >= 1) && (DrawX>=460 && DrawX <462))
+		   else if((tim >= 1) && (DrawX>=460 && DrawX<462))
 			 begin
 				time_on <= 1'b1;
 				timeR <= 8'h7E;
@@ -1161,21 +1181,6 @@ module  frogger(
 		   timeR <= 8'h00;
 		   timeG <= 8'h00;
 		   timeB <= 8'h00;
-		end
-   end
-   //=======================================================
-   //  Time word Drawing Determination
-   //=======================================================
-   always_comb begin
-	  if(DrawX >= 386 && DrawX < 454 && DrawY >= 445 && DrawY < 462)
-		begin
-		   time_word_on <= 1'b1;
-		   addr_read_time <= ((DrawX-386)/2 + (DrawY-445)/2*34);
-		end
-	  else
-		begin
-		   time_word_on <= 1'b0;
-		   addr_read_time <= 0;
 		end
    end
    //=======================================================
