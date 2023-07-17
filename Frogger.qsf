@@ -43,26 +43,6 @@ set_global_assignment -name TOP_LEVEL_ENTITY finalTop
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 21.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:50:51  JULY 12, 2023"
 set_global_assignment -name LAST_QUARTUS_VERSION "21.1.1 Lite Edition"
-set_global_assignment -name SYSTEMVERILOG_FILE logROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE finalTop.sv
-set_global_assignment -name SYSTEMVERILOG_FILE liveROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE roadROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE frogROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE titleROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE HexDriver.sv
-set_global_assignment -name SYSTEMVERILOG_FILE carROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE score_to_hex.sv
-set_global_assignment -name SYSTEMVERILOG_FILE startROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE VGA_controller.sv
-set_global_assignment -name SYSTEMVERILOG_FILE timeROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE frog.sv
-set_global_assignment -name SYSTEMVERILOG_FILE victoryROM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE palette_to_rgb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE frogger.sv
-set_global_assignment -name SYSTEMVERILOG_FILE carlog.sv
-set_global_assignment -name SYSTEMVERILOG_FILE score.sv
-set_global_assignment -name SYSTEMVERILOG_FILE clock.sv
-set_global_assignment -name SYSTEMVERILOG_FILE loseROM.sv
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
@@ -268,4 +248,15 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity DE10_LITE_Defa
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity DE10_LITE_Default -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -entity DE10_LITE_Default -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity DE10_LITE_Default -section_id Top
+set_global_assignment -name SYSTEMVERILOG_FILE finalTop.sv
+set_global_assignment -name SYSTEMVERILOG_FILE HexDriver.sv
+set_global_assignment -name SYSTEMVERILOG_FILE score_to_hex.sv
+set_global_assignment -name SYSTEMVERILOG_FILE VGA_controller.sv
+set_global_assignment -name SYSTEMVERILOG_FILE frog.sv
+set_global_assignment -name SYSTEMVERILOG_FILE palette_to_rgb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE frogger.sv
+set_global_assignment -name SYSTEMVERILOG_FILE carlog.sv
+set_global_assignment -name SYSTEMVERILOG_FILE score.sv
+set_global_assignment -name SYSTEMVERILOG_FILE spriteROM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE clock.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
