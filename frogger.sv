@@ -325,11 +325,6 @@ module  frogger(
    peripheralROM(
                  .read_address(addr_read_peripheral), .Clk(CLK), .data_Out(peripheralROM_out)
                  );
-   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))
-   startROM(
-            .read_address(addr_read_start), .Clk(CLK), .data_Out(startROM_out)
-            );
-
    //=======================================================
    //  CLK Divider for sprites: Based on https://electronics.stackexchange.com/questions/267010/verilog-code-for-frequency-divider
    //=======================================================
@@ -432,9 +427,8 @@ module  frogger(
    //=======================================================
    logic	   is_frog_transparent, is_car_transparent, is_log_transparent, is_vict_transparent; //active high
    logic [7:0] car_red, car_green, car_blue, frog_red, frog_green, frog_blue, log_red, log_green,
-			   log_blue, title_red, title_blue, title_green, lose_red, lose_blue, lose_green,
-			   live_blue, live_red, live_green, time_red, time_blue, time_green,
-			   start_blue, start_green, start_red, vict_red, vict_green, vict_blue;
+               background_red, background_blue, background_green, start_blue, start_green,
+               start_red, peripheral_red, peripheral_green, peripheral_blue;
 
 // TODO combine
 
@@ -444,18 +438,12 @@ module  frogger(
 						  .red(car_red), .green(car_green), .blue(car_blue));
    palette_to_rgb rgblogs(.palette(logROM_out), .transparent(is_log_transparent),
 						  .red(log_red), .green(log_green), .blue(log_blue));
-   palette_to_rgb rgbtitle(.palette(backgroundROM_out), .transparent(),
-						   .red(title_red), .green(title_green), .blue(title_blue));
-   palette_to_rgb rgblose(.palette(backgroundROM_out), .transparent(),
-						  .red(lose_red), .green(lose_green), .blue(lose_blue));
-   palette_to_rgb rgblive(.palette(peripheralROM_out), .transparent(),
-						  .red(live_red), .green(live_green), .blue(live_blue));
-   palette_to_rgb rgbtime(.palette(peripheralROM_out), .transparent(),
-						  .red(time_red), .green(time_green), .blue(time_blue));
+   palette_to_rgb rgbbackground(.palette(backgroundROM_out), .transparent(),
+						   .red(background_red), .green(background_green), .blue(background_blue));
    palette_to_rgb rgbstart(.palette(startROM_out), .transparent(),
 						   .red(start_red), .green(start_green), .blue(start_blue));
-   palette_to_rgb rgbvict(.palette(peripheralROM_out), .transparent(is_vict_transparent),
-						  .red(vict_red), .green(vict_green), .blue(vict_blue));
+   palette_to_rgb rgbperipheral(.palette(peripheralROM_out), .transparent(is_vict_transparent),
+						  .red(peripheral_red), .green(peripheral_green), .blue(peripheral_blue));
    //=======================================================
    //  Frog Drawing Determination
    //=======================================================
@@ -1196,17 +1184,11 @@ module  frogger(
 		  end
 		else if (DrawX >= 80 && DrawX <= 600 && DrawY>=0 && DrawY<443)
 		  begin
-			 if(gameStart == 1'b0)
+			 if(gameStart == 1'b0 || gameEnd == 1'b1)
 			   begin
-				  Red = title_red;
-				  Green = title_green;
-				  Blue  = title_blue;
-			   end
-			 else if(gameEnd == 1'b1)
-			   begin
-				  Red = lose_red;
-				  Green = lose_green;
-				  Blue  = lose_blue;
+				  Red = background_red;
+				  Green = background_green;
+				  Blue  = background_blue;
 			   end
 			 else if ((Frog_on == 1'b1) && (is_frog_transparent == 1'b0))
 			   begin
@@ -1246,9 +1228,9 @@ module  frogger(
 			 //win zone
 			 else if( is_vict_transparent == 1'b0 && vict_on == 1'b1)
 			   begin
-				  Red <= vict_red;
-				  Green <= vict_green;
-				  Blue <= vict_blue;
+				  Red <= peripheral_red;
+				  Green <= peripheral_green;
+				  Blue <= peripheral_blue;
 			   end
              else if(DrawY >= 26 && DrawY < 30)
                begin
@@ -1312,23 +1294,17 @@ module  frogger(
 		  end
 		else if(gameStart == 1'b1 && gameEnd == 1'b0)
 		  begin
-			 if(live_on == 1'b1)
+			 if(live_on == 1'b1 || time_word_on == 1'b1)
 			   begin
-				  Red <= live_red;
-				  Green <= live_green;
-				  Blue <= live_blue;
+				  Red <= peripheral_red;
+				  Green <= peripheral_green;
+				  Blue <= peripheral_blue;
 			   end
 			 else if(time_on == 1'b1)
 			   begin
 				  Red <= timeR;
 				  Green <= timeG;
 				  Blue <= timeB;
-			   end
-			 else if(time_word_on == 1'b1)
-			   begin
-				  Red <= time_red;
-				  Green <= time_green;
-				  Blue <= time_blue;
 			   end
 			 else
 			   begin
