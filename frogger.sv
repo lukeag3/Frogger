@@ -325,6 +325,10 @@ module  frogger(
    peripheralROM(
                  .read_address(addr_read_peripheral), .Clk(CLK), .data_Out(peripheralROM_out)
                  );
+   spriteROM #(.ADDR_WIDTH(12), .DATA_WIDTH(4030), .FILE_NAME("sprite_bytes/startROM.txt"))
+   startROM(
+            .read_address(addr_read_start), .Clk(CLK), .data_Out(startROM_out)
+            );
    //=======================================================
    //  CLK Divider for sprites: Based on https://electronics.stackexchange.com/questions/267010/verilog-code-for-frequency-divider
    //=======================================================
