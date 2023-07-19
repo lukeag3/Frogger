@@ -148,9 +148,7 @@ module  frogger(
 			 log2mov <= 1'b0;
 			 log3mov <= 1'b0;
 		  end
-		else if ((Frog_on == 1'b1) && ((Car0_on == 1'b1) || (Car1_on == 1'b1) || (Car2_on == 1'b1) || (Car3_on == 1'b1) ||
-									   (Car4_on == 1'b1) || (Car5_on == 1'b1) || (Car6_on == 1'b1) || (Car5_on == 1'b1) ||
-									   (Car6_on == 1'b1) || (Car7_on == 1'b1) || (Car8_on == 1'b1) || (Car9_on == 1'b1)) && (is_frog_transparent == 1'b0) &&
+		else if ((Frog_on == 1'b1) && (Car_ON == 1'b1) && (is_frog_transparent == 1'b0) &&
 				 (is_car_transparent == 1'b0))
 		  begin
              Collision <= 1'b1;
@@ -161,10 +159,7 @@ module  frogger(
 		  end
 		else if((FrogY > 60 && FrogY < 200))
 		  begin
-			 if(Frog_on == 1'b1 && (is_frog_transparent == 1'b0) && !(log0_on == 1'b1 || log1_on == 1'b1 || log2_on == 1'b1 || log3_on == 1'b1 ||
-																	  log4_on == 1'b1 || log5_on == 1'b1 || log6_on == 1'b1 || log7_on == 1'b1 ||
-																	  log8_on == 1'b1 || log9_on == 1'b1 || log10_on == 1'b1 || log11_on == 1'b1 ||
-																	  log12_on == 1'b1 || log13_on == 1'b1 || log14_on == 1'b1))
+			 if(Frog_on == 1'b1 && (is_frog_transparent == 1'b0) && !(log_ON != 15'b0))
 			   begin
 				  Splash <= 1'b1;
 				  log0mov <= 1'b0;
@@ -172,28 +167,28 @@ module  frogger(
 				  log2mov <= 1'b0;
 				  log3mov <= 1'b0;
 			   end
-			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log0_on == 1'b1 || log4_on == 1'b1 || log8_on == 1'b1) && (is_log_transparent == 1'b0))
+			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log_ON[0] == 1'b1 || log_ON[4] == 1'b1 || log_ON[8] == 1'b1) && (is_log_transparent == 1'b0))
 			   begin
 				  log0mov <= 1'b1;
 				  log1mov <= 1'b0;
 				  log2mov <= 1'b0;
 				  log3mov <= 1'b0;
 			   end
-			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log1_on == 1'b1 || log5_on == 1'b1 || log9_on == 1'b1) && (is_log_transparent == 1'b0))
+			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log_ON[1] == 1'b1 || log_ON[5] == 1'b1 || log_ON[9] == 1'b1) && (is_log_transparent == 1'b0))
 			   begin
 				  log0mov <= 1'b0;
 				  log1mov <= 1'b1;
 				  log2mov <= 1'b0;
 				  log3mov <= 1'b0;
 			   end
-			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log2_on == 1'b1 || log6_on == 1'b1 || log10_on == 1'b1) && (is_log_transparent == 1'b0))
+			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log_ON[2] == 1'b1 || log_ON[6] == 1'b1 || log_ON[10] == 1'b1) && (is_log_transparent == 1'b0))
 			   begin
 				  log0mov <= 1'b0;
 				  log1mov <= 1'b0;
 				  log2mov <= 1'b1;
 				  log3mov <= 1'b0;
 			   end
-			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log3_on == 1'b1 || log7_on == 1'b1 || log11_on == 1'b1) && (is_log_transparent == 1'b0))
+			 else if((FrogX > 74 && FrogX < 594) && (Frog_on == 1'b1) && (log_ON[3] == 1'b1 || log_ON[7] == 1'b1 || log_ON[11] == 1'b1) && (is_log_transparent == 1'b0))
 			   begin
 				  log0mov <= 1'b0;
 				  log1mov <= 1'b0;
@@ -489,447 +484,124 @@ module  frogger(
    //=======================================================
    //  Car Drawing Determination
    //=======================================================
-   logic Car0_on, Car1_on, Car2_on, Car3_on, Car4_on, Car5_on, Car6_on, Car7_on, Car8_on, Car9_on;
+   logic Car_ON;
    always_comb
 	 begin:Car_on_proc
 		if ((DrawX > (Car0_X - CAROFF)) && (DrawX < (Car0_X + CAROFF)) && (DrawY > (Car0_Y - CAROFF)) && (DrawY < (Car0_Y + CAROFF))) begin
 		   addr_read_car <= ((DrawX-car0startX) + (DrawY-car0startY)*40);
-		   Car0_on <= 1'b1;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car1_X - CAROFF)) && (DrawX < (Car1_X + CAROFF)) && (DrawY > (Car1_Y - CAROFF)) && (DrawY < (Car1_Y + CAROFF))) begin
 		   addr_read_car <= (39-(DrawX-car1startX) + (DrawY-car1startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b1;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car2_X - CAROFF)) && (DrawX < (Car2_X + CAROFF)) && (DrawY > (Car2_Y - CAROFF)) && (DrawY < (Car2_Y + CAROFF))) begin
 		   addr_read_car <= (39-(DrawX-car2startX) + (DrawY-car2startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b1;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
-		end
+		   Car_ON <= 1'b1;
+	    end
 		else if ((DrawX > (Car3_X - CAROFF)) && (DrawX < (Car3_X + CAROFF)) && (DrawY > (Car3_Y - CAROFF)) && (DrawY < (Car3_Y + CAROFF))) begin
 		   addr_read_car <= ((DrawX-car3startX) + (DrawY-car3startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b1;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car4_X - CAROFF)) && (DrawX < (Car4_X + CAROFF)) && (DrawY > (Car4_Y - CAROFF)) && (DrawY < (Car4_Y + CAROFF))) begin
 		   addr_read_car <= (39-(DrawX-car4startX) + (DrawY-car4startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b1;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car5_X - CAROFF)) && (DrawX < (Car5_X + CAROFF)) && (DrawY > (Car5_Y - CAROFF)) && (DrawY < (Car5_Y + CAROFF))) begin
 		   addr_read_car <= ((DrawX-car5startX) + (DrawY-car5startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b1;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car6_X - CAROFF)) && (DrawX < (Car6_X + CAROFF)) && (DrawY > (Car6_Y - CAROFF)) && (DrawY < (Car6_Y + CAROFF))) begin
 		   addr_read_car <= (39-(DrawX-car6startX) + (DrawY-car6startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b1;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car7_X - CAROFF)) && (DrawX < (Car7_X + CAROFF)) && (DrawY > (Car7_Y - CAROFF)) && (DrawY < (Car7_Y + CAROFF))) begin
 		   addr_read_car <= (39-(DrawX-car7startX) + (DrawY-car7startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b1;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		  end
 		else if ((DrawX > (Car8_X - CAROFF)) && (DrawX < (Car8_X + CAROFF)) && (DrawY > (Car8_Y - CAROFF)) && (DrawY < (Car8_Y + CAROFF))) begin
 		   addr_read_car <= ((DrawX-car8startX) + (DrawY-car8startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b1;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b1;
 		end
 		else if ((DrawX > (Car9_X - CAROFF)) && (DrawX < (Car9_X + CAROFF)) && (DrawY > (Car9_Y - CAROFF)) && (DrawY < (Car9_Y + CAROFF))) begin
 		   addr_read_car <= (39-(DrawX-car9startX) + (DrawY-car9startY)*40);
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b1;
+		   Car_ON <= 1'b1;
 		end
 		else begin
 		   addr_read_car <= 0;
-		   Car0_on <= 1'b0;
-		   Car1_on <= 1'b0;
-		   Car2_on <= 1'b0;
-		   Car3_on <= 1'b0;
-		   Car4_on <= 1'b0;
-		   Car5_on <= 1'b0;
-		   Car6_on <= 1'b0;
-		   Car7_on <= 1'b0;
-		   Car8_on <= 1'b0;
-		   Car9_on <= 1'b0;
+		   Car_ON <= 1'b0;
 		end
 		
 	 end
    //=======================================================
    //  log Drawing Determination
    //=======================================================
-   logic log0_on, log1_on, log2_on, log3_on, log4_on, log5_on, log6_on, log7_on, log8_on, log9_on, log10_on, log11_on, log12_on, log13_on, log14_on;
+   logic [14:0] log_ON;
    always_comb
 	 begin:log_on_proc
 		if ((DrawX > (log0_X - LOGOFF)) && (DrawX < (log0_X + LOGOFF)) && (DrawY > (log0_Y - CAROFF)) && (DrawY < (log0_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log0startX) + (DrawY-log0startY)*80);
-		   log0_on <= 1'b1;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000000000001;
 		  end
 		else if ((DrawX > (log1_X - LOGOFF)) && (DrawX < (log1_X + LOGOFF)) && (DrawY > (log1_Y - CAROFF)) && (DrawY < (log1_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log1startX) + (DrawY-log1startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b1;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000000000010;
 		end
 		else if ((DrawX > (log2_X - LOGOFF)) && (DrawX < (log2_X + LOGOFF)) && (DrawY > (log2_Y - CAROFF)) && (DrawY < (log2_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log2startX) + (DrawY-log2startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b1;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000000000100;
 		end
 		else if ((DrawX > (log3_X - LOGOFF)) && (DrawX < (log3_X + LOGOFF)) && (DrawY > (log3_Y - CAROFF)) && (DrawY < (log3_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log3startX) + (DrawY-log3startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b1;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000000001000;
 		end
 		else if ((DrawX > (log4_X - LOGOFF)) && (DrawX < (log4_X + LOGOFF)) && (DrawY > (log4_Y - CAROFF)) && (DrawY < (log4_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log4startX) + (DrawY-log4startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b1;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000000010000;
 		end
 		else if ((DrawX > (log5_X - LOGOFF)) && (DrawX < (log5_X + LOGOFF)) && (DrawY > (log5_Y - CAROFF)) && (DrawY < (log5_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log5startX) + (DrawY-log5startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b1;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000000100000;
 		end
 		else if ((DrawX > (log6_X - LOGOFF)) && (DrawX < (log6_X + LOGOFF)) && (DrawY > (log6_Y - CAROFF)) && (DrawY < (log6_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log6startX) + (DrawY-log6startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b1;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000001000000;
 		end
 		else if ((DrawX > (log7_X - LOGOFF)) && (DrawX < (log7_X + LOGOFF)) && (DrawY > (log7_Y - CAROFF)) && (DrawY < (log7_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log7startX) + (DrawY-log7startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b1;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000010000000;
 		end
 		else if ((DrawX > (log8_X - LOGOFF)) && (DrawX < (log8_X + LOGOFF)) && (DrawY > (log8_Y - CAROFF)) && (DrawY < (log8_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log8startX) + (DrawY-log8startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b1;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000000100000000;
 		end
 		else if ((DrawX > (log9_X - LOGOFF)) && (DrawX < (log9_X + LOGOFF)) && (DrawY > (log9_Y - CAROFF)) && (DrawY < (log9_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log9startX) + (DrawY-log9startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b1;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000001000000000;
 		end
 		else if ((DrawX > (log10_X - LOGOFF)) && (DrawX < (log10_X + LOGOFF)) && (DrawY > (log10_Y - CAROFF)) && (DrawY < (log10_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log10startX) + (DrawY-log10startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b1;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000010000000000;
 		end
 		else if ((DrawX > (log11_X - LOGOFF)) && (DrawX < (log11_X + LOGOFF)) && (DrawY > (log11_Y - CAROFF)) && (DrawY < (log11_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log11startX) + (DrawY-log11startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b1;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b000100000000000;
 		end
 		else if ((DrawX > (log9_X - LOGOFF)) && (DrawX < (log12_X + LOGOFF)) && (DrawY > (log12_Y - CAROFF)) && (DrawY < (log12_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log12startX) + (DrawY-log12startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b1;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b001000000000000;
 		end
 		else if ((DrawX > (log13_X - LOGOFF)) && (DrawX < (log13_X + LOGOFF)) && (DrawY > (log13_Y - CAROFF)) && (DrawY < (log13_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log13startX) + (DrawY-log13startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b1;
-		   log14_on <= 1'b0;
+		   log_ON <= 1'b010000000000000;
 		end
 		else if ((DrawX > (log14_X - LOGOFF)) && (DrawX < (log14_X + LOGOFF)) && (DrawY > (log14_Y - CAROFF)) && (DrawY < (log14_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log14startX) + (DrawY-log14startY)*80);
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b1;
+		   log_ON <= 1'b100000000000000;
 		end
 		else begin
 		   addr_read_log <= 0;
-		   log0_on <= 1'b0;
-		   log1_on <= 1'b0;
-		   log2_on <= 1'b0;
-		   log3_on <= 1'b0;
-		   log4_on <= 1'b0;
-		   log5_on <= 1'b0;
-		   log6_on <= 1'b0;
-		   log7_on <= 1'b0;
-		   log8_on <= 1'b0;
-		   log9_on <= 1'b0;
-		   log10_on <= 1'b0;
-		   log11_on <= 1'b0;
-		   log12_on <= 1'b0;
-		   log13_on <= 1'b0;
-		   log14_on <= 1'b0;
+		   log_ON <= 15'b0;
 		end
 	 end
    //=======================================================
@@ -1203,10 +875,7 @@ module  frogger(
 			 //=======================================================
 			 //  Log Mapping to display
 			 //=======================================================
-			 else if((log0_on== 1'b1 || log1_on== 1'b1 || log2_on== 1'b1 || log3_on== 1'b1 ||
-		         	  log4_on== 1'b1 || log5_on== 1'b1 || log6_on== 1'b1 || log7_on== 1'b1 ||
-					  log8_on== 1'b1 || log9_on== 1'b1 || log10_on== 1'b1 || log11_on== 1'b1 ||
-					  log12_on== 1'b1 || log13_on== 1'b1 || log14_on== 1'b1) &&  (is_log_transparent == 1'b0))
+			 else if((log_ON != 15'b0) &&  (is_log_transparent == 1'b0))
 			   begin
 				  Red <= log_red;
 				  Green <= log_green;
@@ -1215,9 +884,7 @@ module  frogger(
 			 //=======================================================
 			 //  Car Mapping to display
 			 //=======================================================
-			 else if((Car0_on== 1'b1 || Car1_on== 1'b1 || Car2_on== 1'b1 || Car3_on== 1'b1 ||
-		         	  Car4_on== 1'b1 || Car5_on== 1'b1 || Car6_on== 1'b1 || Car7_on== 1'b1 ||
-					  Car8_on== 1'b1 || Car9_on== 1'b1) &&  (is_car_transparent == 1'b0))
+			 else if((Car_ON == 1'b1) &&  (is_car_transparent == 1'b0))
 			   begin
 				  Red <= car_red;
 				  Green <= car_green;
