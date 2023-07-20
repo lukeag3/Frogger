@@ -14,7 +14,7 @@ module frogger(
    parameter                       LOGOFF = 40;
    parameter                       CAROFF = 20;
    parameter                       FROGOFF = 20;
-   parameter                       live_OFF = 12;
+   parameter                       liveOFF = 12;
    logic                           Reset;
    // allow external reset and in game reset
    always_ff @ (posedge MAX10_CLK1_50 or posedge ResetIn or posedge ResetLevel )
