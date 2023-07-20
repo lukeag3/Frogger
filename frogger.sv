@@ -1,21 +1,22 @@
-//-------------------------------------------------------------------------
-//      frogger.sv                                             			 --
-//      Luke Granger, Ben Thuma                                          --
-//      11-09-2022                                                       --
-// 	  For use with ECE 385 Final Project                     			 --
-//      																						 --
-//																								 --
-//		  Handles the drawing, and gameplay of frogger 							 --
-//-------------------------------------------------------------------------
-module  frogger(
-				input               CLK, MAX10_CLK1_50, ResetIn,
-				input [9:0]         DrawX, DrawY,
-				input logic [7:0]   keycode,
-				input logic [9:0]   SW,
-				output logic [7:0]  Red, Green, Blue,
-				output logic [15:0] score);
-								
-   logic                            Reset;
+/*
+ frogger.sv
+ Handles the drawing, and gameplay of frogger
+ */
+
+module frogger(
+			   input               CLK, MAX10_CLK1_50, ResetIn,
+			   input [9:0]         DrawX, DrawY,
+			   input logic [7:0]   keycode,
+			   input logic [9:0]   SW,
+			   output logic [7:0]  Red, Green, Blue,
+			   output logic [15:0] score);
+
+   parameter                       LOGOFF = 40;
+   parameter                       CAROFF = 20;
+   parameter                       FROGOFF = 20;
+   parameter                       live_OFF = 12;
+   logic                           Reset;
+   // allow external reset and in game reset
    always_ff @ (posedge MAX10_CLK1_50 or posedge ResetIn or posedge ResetLevel )
 	 begin
 		if(ResetIn == 1'b1 || ResetLevel == 1'b1)
@@ -41,7 +42,7 @@ module  frogger(
           begin
              gameEnd <= 1'b1;
           end
-		else if( SW[0] == 1'b1)
+		else if(SW[0] == 1'b1)
 		  begin
 			 gameStart <= 1'b1;
 			 gameEnd <= 1'b0;
@@ -59,9 +60,6 @@ module  frogger(
 		//        end
      end
 
-   integer CAROFF, LOGOFF;
-   assign CAROFF = 20;
-   assign LOGOFF = 40;
    //=======================================================
    //  Log Positions
    //=======================================================
@@ -426,10 +424,8 @@ module  frogger(
    //=======================================================
    logic	   is_frog_transparent, is_car_transparent, is_log_transparent, is_vict_transparent; //active high
    logic [7:0] car_red, car_green, car_blue, frog_red, frog_green, frog_blue, log_red, log_green,
-               background_red, background_blue, background_green, start_blue, start_green,
+               log_blue, background_red, background_blue, background_green, start_blue, start_green,
                start_red, peripheral_red, peripheral_green, peripheral_blue;
-
-// TODO combine
 
    palette_to_rgb rgbfrogs(.palette(frogROM_out), .transparent(is_frog_transparent),
 						   .red(frog_red), .green(frog_green), .blue(frog_blue));
@@ -447,9 +443,7 @@ module  frogger(
    //  Frog Drawing Determination
    //=======================================================
    logic	   Frog_on;
-   integer	   FROGOFF;
-   assign FROGOFF = 20;
-   int		   startX, startY;
+   int         startX, startY;
    assign startX = FrogX - FROGOFF;
    assign startY = FrogY - FROGOFF;
    always_comb
@@ -541,63 +535,63 @@ module  frogger(
 	 begin:log_on_proc
 		if ((DrawX > (log0_X - LOGOFF)) && (DrawX < (log0_X + LOGOFF)) && (DrawY > (log0_Y - CAROFF)) && (DrawY < (log0_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log0startX) + (DrawY-log0startY)*80);
-		   log_ON <= 1'b000000000000001;
+		   log_ON <= 15'b000000000000001;
 		  end
 		else if ((DrawX > (log1_X - LOGOFF)) && (DrawX < (log1_X + LOGOFF)) && (DrawY > (log1_Y - CAROFF)) && (DrawY < (log1_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log1startX) + (DrawY-log1startY)*80);
-		   log_ON <= 1'b000000000000010;
+		   log_ON <= 15'b000000000000010;
 		end
 		else if ((DrawX > (log2_X - LOGOFF)) && (DrawX < (log2_X + LOGOFF)) && (DrawY > (log2_Y - CAROFF)) && (DrawY < (log2_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log2startX) + (DrawY-log2startY)*80);
-		   log_ON <= 1'b000000000000100;
+		   log_ON <= 15'b000000000000100;
 		end
 		else if ((DrawX > (log3_X - LOGOFF)) && (DrawX < (log3_X + LOGOFF)) && (DrawY > (log3_Y - CAROFF)) && (DrawY < (log3_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log3startX) + (DrawY-log3startY)*80);
-		   log_ON <= 1'b000000000001000;
+		   log_ON <= 15'b000000000001000;
 		end
 		else if ((DrawX > (log4_X - LOGOFF)) && (DrawX < (log4_X + LOGOFF)) && (DrawY > (log4_Y - CAROFF)) && (DrawY < (log4_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log4startX) + (DrawY-log4startY)*80);
-		   log_ON <= 1'b000000000010000;
+		   log_ON <= 15'b000000000010000;
 		end
 		else if ((DrawX > (log5_X - LOGOFF)) && (DrawX < (log5_X + LOGOFF)) && (DrawY > (log5_Y - CAROFF)) && (DrawY < (log5_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log5startX) + (DrawY-log5startY)*80);
-		   log_ON <= 1'b000000000100000;
+		   log_ON <= 15'b000000000100000;
 		end
 		else if ((DrawX > (log6_X - LOGOFF)) && (DrawX < (log6_X + LOGOFF)) && (DrawY > (log6_Y - CAROFF)) && (DrawY < (log6_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log6startX) + (DrawY-log6startY)*80);
-		   log_ON <= 1'b000000001000000;
+		   log_ON <= 15'b000000001000000;
 		end
 		else if ((DrawX > (log7_X - LOGOFF)) && (DrawX < (log7_X + LOGOFF)) && (DrawY > (log7_Y - CAROFF)) && (DrawY < (log7_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log7startX) + (DrawY-log7startY)*80);
-		   log_ON <= 1'b000000010000000;
+		   log_ON <= 15'b000000010000000;
 		end
 		else if ((DrawX > (log8_X - LOGOFF)) && (DrawX < (log8_X + LOGOFF)) && (DrawY > (log8_Y - CAROFF)) && (DrawY < (log8_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log8startX) + (DrawY-log8startY)*80);
-		   log_ON <= 1'b000000100000000;
+		   log_ON <= 15'b000000100000000;
 		end
 		else if ((DrawX > (log9_X - LOGOFF)) && (DrawX < (log9_X + LOGOFF)) && (DrawY > (log9_Y - CAROFF)) && (DrawY < (log9_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log9startX) + (DrawY-log9startY)*80);
-		   log_ON <= 1'b000001000000000;
+		   log_ON <= 15'b000001000000000;
 		end
 		else if ((DrawX > (log10_X - LOGOFF)) && (DrawX < (log10_X + LOGOFF)) && (DrawY > (log10_Y - CAROFF)) && (DrawY < (log10_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log10startX) + (DrawY-log10startY)*80);
-		   log_ON <= 1'b000010000000000;
+		   log_ON <= 15'b000010000000000;
 		end
 		else if ((DrawX > (log11_X - LOGOFF)) && (DrawX < (log11_X + LOGOFF)) && (DrawY > (log11_Y - CAROFF)) && (DrawY < (log11_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log11startX) + (DrawY-log11startY)*80);
-		   log_ON <= 1'b000100000000000;
+		   log_ON <= 15'b000100000000000;
 		end
 		else if ((DrawX > (log9_X - LOGOFF)) && (DrawX < (log12_X + LOGOFF)) && (DrawY > (log12_Y - CAROFF)) && (DrawY < (log12_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log12startX) + (DrawY-log12startY)*80);
-		   log_ON <= 1'b001000000000000;
+		   log_ON <= 15'b001000000000000;
 		end
 		else if ((DrawX > (log13_X - LOGOFF)) && (DrawX < (log13_X + LOGOFF)) && (DrawY > (log13_Y - CAROFF)) && (DrawY < (log13_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log13startX) + (DrawY-log13startY)*80);
-		   log_ON <= 1'b010000000000000;
+		   log_ON <= 15'b010000000000000;
 		end
 		else if ((DrawX > (log14_X - LOGOFF)) && (DrawX < (log14_X + LOGOFF)) && (DrawY > (log14_Y - CAROFF)) && (DrawY < (log14_Y + CAROFF))) begin
 		   addr_read_log <= ((DrawX-log14startX) + (DrawY-log14startY)*80);
-		   log_ON <= 1'b100000000000000;
+		   log_ON <= 15'b100000000000000;
 		end
 		else begin
 		   addr_read_log <= 0;
@@ -751,9 +745,7 @@ module  frogger(
    //  Lives Drawing Determination
    //=======================================================
    logic live_on;
-   int	 liveOFF;
-   assign liveOFF = 12;
-   int	 live0startX, live0startY,live1startX, live1startY,live2startX, live2startY,live3startX, live3startY, live4startX,live4startY;
+   int   live0startX, live0startY,live1startX, live1startY,live2startX, live2startY,live3startX, live3startY, live4startX,live4startY;
    always_comb begin
 	  live0startX <= 92 - liveOFF;
 	  live0startY <= 455 - liveOFF;
